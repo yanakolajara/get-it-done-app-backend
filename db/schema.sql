@@ -33,7 +33,8 @@ CREATE TABLE parentTasks(
     content TEXT,
     progress_state INT CHECK (progress_state >= 1 and progress_state <= 3),
     is_staged BOOLEAN DEFAULT FALSE,
-    date DATE NOT NULL
+    date DATE NOT NULL,
+    position INTEGER
 );
 
 CREATE TABLE childTasks(
