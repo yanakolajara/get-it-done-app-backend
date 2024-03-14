@@ -6,7 +6,6 @@ CREATE DATABASE task_app;
 DROP TABLE IF EXISTS childTasks;
 DROP TABLE IF EXISTS parentTasks;
 DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS details;
 
 --------* TASK SECTION ---------
 
@@ -21,30 +20,24 @@ CREATE TABLE users(
     authToken VARCHAR(50)
 );
 
-CREATE TABLE details(
-    id SERIAL PRIMARY KEY,
-    test VARCHAR(50)
-);
-
 CREATE TABLE parentTasks(
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id),
-    details_id INTEGER REFERENCES details(id),
     content TEXT,
     progress_state INT CHECK (progress_state >= 1 and progress_state <= 3),
-    is_staged BOOLEAN DEFAULT FALSE,
     date DATE NOT NULL,
-    position INTEGER
+    previews_task_id INTEGER,
+    next_task_id INTEGER
 );
 
 CREATE TABLE childTasks(
     id SERIAL PRIMARY KEY,
     parentTask_id INTEGER REFERENCES parentTasks(id)
     ON DELETE CASCADE,
-    details_id INTEGER REFERENCES details(id),
     content TEXT,
     completed BOOLEAN DEFAULT FALSE,
     physical_energy INT CHECK (physical_energy >= 0 and physical_energy <= 4),
     emotional_energy INT CHECK (physical_energy >= 0 and physical_energy <= 12),
-    position INTEGER
+    previews_task_id INTEGER,
+    next_task_id INTEGER
 );

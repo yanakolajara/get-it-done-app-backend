@@ -7,7 +7,10 @@ const {
   getSpecificDateParentTasksFromUser,
   editParentTask,
   deleteParentTask,
-} = require("../models/parentTasks.model");
+  getTaskWithTaskId,
+  getTaskOnTopOfStack,
+  editTaskPosition,
+} = require("../models/tasks.model");
 
 controller.get("/", async (req, res) => {
   try {
@@ -57,9 +60,23 @@ controller.get("/:user_id/:date", async (req, res) => {
 //* Create new task with user_id
 
 controller.post("/:user_id", async (req, res) => {
-  console.log(req.body);
   try {
-    const newParentTask = await createParentTask(req.body, req.params.user_id);
+    const past_task = await getTaskOnTopOfStack(1);
+    console.log("getTaskOnTopOfStack: ", past_task);
+    console.log("getTaskOnTopOfStack[0]: ", past_task[0]);
+    const newParentTask = await createParentTask(
+      req.body,
+      req.params.user_id,
+      past_task[0] ? past_task[0].id : null
+    );
+    console.log("getTaskOnTopOfStack: ", past_task);
+    if (past_task[0]) {
+      const past_edited_task = await editTaskPosition(
+        past_task[0].id,
+        newParentTask.id,
+        past_task[0].previews_task_id
+      );
+    }
     if (newParentTask) {
       res.status(201).json(newParentTask);
     } else {
@@ -89,7 +106,18 @@ controller.put("/:task_id", async (req, res) => {
 
 controller.delete("/:task_id", async (req, res) => {
   try {
+    const taskToDelete = await getTaskWithTaskId(req.params.task_id);
     const deletedParentTask = await deleteParentTask(req.params.task_id);
+    const prevTask = await editTaskPosition(
+      taskToDelete[0].previews_task_id,
+      taskToDelete[0].next_task_id,
+      undefined
+    );
+    const nextTask = await editTaskPosition(
+      taskToDelete[0].next_task_id,
+      undefined,
+      taskToDelete[0].previews_task_id
+    );
     if (deletedParentTask.length) {
       res.status(200).json(deletedParentTask);
     } else {
