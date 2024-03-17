@@ -3,8 +3,8 @@ const cors = require("cors");
 const morgan = require("morgan");
 const app = express();
 
-const tasksController = require("./controllers/tasks.controller");
-const childTasksController = require("./controllers/childTasks.controller");
+const tasksController = require("./controllers/tasks-controller");
+const childTasksController = require("./controllers/childTasks-controller");
 
 app.use(morgan("dev"));
 app.use(express.json());

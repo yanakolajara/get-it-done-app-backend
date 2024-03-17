@@ -10,7 +10,7 @@ const {
   getTaskWithTaskId,
   getTaskOnTopOfStack,
   editTaskPosition,
-} = require("../models/tasks.model");
+} = require("../models/tasks-model");
 
 controller.get("/", async (req, res) => {
   try {
@@ -62,14 +62,11 @@ controller.get("/:user_id/:date", async (req, res) => {
 controller.post("/:user_id", async (req, res) => {
   try {
     const past_task = await getTaskOnTopOfStack(1);
-    console.log("getTaskOnTopOfStack: ", past_task);
-    console.log("getTaskOnTopOfStack[0]: ", past_task[0]);
     const newParentTask = await createParentTask(
       req.body,
       req.params.user_id,
       past_task[0] ? past_task[0].id : null
     );
-    console.log("getTaskOnTopOfStack: ", past_task);
     if (past_task[0]) {
       const past_edited_task = await editTaskPosition(
         past_task[0].id,

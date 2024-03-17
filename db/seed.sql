@@ -63,14 +63,14 @@ INSERT INTO
     childTasks(parentTask_id, content, completed, physical_energy, emotional_energy , previews_task_id, next_task_id)
 VALUES
     -- Child tasks for Ynk's tasks
-    (1, 'Take the items out', false, 3, 2, 1, null),
-    (1, 'Clean the surface', false, 2, 3, 2, 0),
-    (1, 'Polish the wood', false, 3, 4, 3, 1),
-    (1, 'Put things back', false, 1, 2, 4, 2),
-    (2, 'Take clothes out', false, 2, 2, 1, null),
-    (2, 'Sort clothes by type', false, 3, 3, 2, 0),
-    (2, 'Fold clothes neatly', false, 2, 3, 3, 2),
-    (2, 'Arrange clothes in closet', false, 2, 2, 4, 3),
+    (1, 'Take the items out', false, 3, 2, null, 2),
+    (1, 'Clean the surface', false, 2, 1, 1, 3),
+    (1, 'Polish the wood', false, 3, 4, 2, 4),
+    (1, 'Put things back', false, 1, 2, 3, null),
+    (2, 'Take clothes out', false, 2, 2, null, 6),
+    (2, 'Sort clothes by type', false, 3, 3, 5, 7),
+    (2, 'Fold clothes neatly', false, 2, 3, 6, 8),
+    (2, 'Arrange clothes in closet', false, 2, null, 7, 9),
     -- Child tasks for Luz's tasks
     (3, 'Read Chapter 1', false, 2, 3,1, null),
     (3, 'Complete Practice Problems', false, 3, 4, 2, 0),
