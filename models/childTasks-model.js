@@ -16,7 +16,6 @@ const getChildTasksFromTaskId = async (task_id) => {
       "SELECT * FROM childTasks WHERE parentTask_id = $1",
       [task_id]
     );
-    console.log("data: ", data);
     return data;
   } catch (error) {
     return error.message;
@@ -37,16 +36,16 @@ const getTaskOnTopOfQueue = async (task_id) => {
 
 //* Create new task with task_id
 
-const createChildTask = async (data, parentTask_id, past_task_id) => {
+const createChildTask = async (parentTask_id, data, past_task_id) => {
   try {
     const response = await db.one(
-      "INSERT INTO childTasks(parentTask_id, content, completed,  physical_energy, emotional_energy, previews_task_id, next_task_id) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+      "INSERT INTO childTasks(parentTask_id, content, completed, physical_energy, emotional_energy , previews_task_id, next_task_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
       [
         parentTask_id,
         data.content,
         false,
-        data.physical_energy,
-        data.emotional_energy,
+        data.physical_energy || 0,
+        data.emotional_energy || 0,
         past_task_id,
         null,
       ]
@@ -61,22 +60,22 @@ const createChildTask = async (data, parentTask_id, past_task_id) => {
 
 const editChildTaskPosition = async (task_id, next_task_id, prev_task_id) => {
   try {
-    let query;
-    let params;
-    if (next_task_id === undefined) {
-      query =
-        "UPDATE childTasks SET previews_task_id = $1 WHERE id = $2 RETURNING *";
-      params = [prev_task_id, task_id];
-    } else if (prev_task_id === undefined) {
-      query =
-        "UPDATE childTasks SET next_task_id = $1 WHERE id = $2 RETURNING *";
-      params = [next_task_id, task_id];
-    } else {
-      query =
-        "UPDATE childTasks SET next_task_id = $1, previews_task_id = $2 WHERE id = $3 RETURNING *";
-      params = [next_task_id, prev_task_id, task_id];
-    }
-    const response = await db.one(query, params);
+    const response = await db.one(
+      "UPDATE childTasks SET next_task_id = $1, previews_task_id = $2 WHERE id = $3 RETURNING *",
+      [next_task_id, prev_task_id, task_id]
+    );
+    return response;
+  } catch (error) {
+    return error.message;
+  }
+};
+
+const editChildTaskCompletionStatus = async (task_id, isCompleted) => {
+  try {
+    const response = await db.one(
+      "UPDATE childTasks SET completed = $1 WHERE id = $2 RETURNING *",
+      [isCompleted, task_id]
+    );
     return response;
   } catch (error) {
     return error.message;
@@ -85,10 +84,24 @@ const editChildTaskPosition = async (task_id, next_task_id, prev_task_id) => {
 
 //* Delete a specific task with task_id
 
+const deleteChildTask = async (task_id) => {
+  try {
+    const response = await db.one(
+      "DELETE FROM childTasks WHERE id = $1 RETURNING *",
+      [task_id]
+    );
+    return response;
+  } catch (error) {
+    return error;
+  }
+};
+
 module.exports = {
   getAllChildTasks,
   getChildTasksFromTaskId,
   getTaskOnTopOfQueue,
   createChildTask,
   editChildTaskPosition,
+  deleteChildTask,
+  editChildTaskCompletionStatus,
 };

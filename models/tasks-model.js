@@ -38,9 +38,10 @@ const getTaskWithTaskId = async (task_id) => {
 const getTaskOnTopOfStack = async (user_id) => {
   try {
     const data = await db.any(
-      "SELECT * FROM parenttasks WHERE next_task_id IS NULL AND user_id = $1",
+      "SELECT * FROM parentTasks WHERE next_task_id IS NULL AND user_id = $1",
       [user_id]
     );
+
     return data;
   } catch (error) {
     return error.message;
@@ -61,18 +62,11 @@ const getSpecificDateParentTasksFromUser = async (user_id, date) => {
 };
 
 //* Create new task with user_id
-const createParentTask = async (data, user_id, past_task_id) => {
+const createParentTask = async (user_id, data, past_task_id) => {
   try {
     const response = await db.one(
-      "INSERT INTO parentTasks(user_id, content, progress_state, date, previews_task_id, next_task_id) VALUES($1, $2, $3, $4, $5, $6) RETURNING *",
-      [
-        user_id,
-        data.content,
-        data.progress_state || 1,
-        data.date || null,
-        past_task_id || null,
-        null,
-      ]
+      "INSERT INTO parentTasks(user_id, content, progress_state, date, previews_task_id, next_task_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+      [user_id, data.content, 1, data.date, past_task_id, null]
     );
     return response;
   } catch (error) {
@@ -83,12 +77,18 @@ const createParentTask = async (data, user_id, past_task_id) => {
 //* Edit a specific task with task_id
 const editParentTask = async (task_id, newData) => {
   try {
+    console.log([
+      newData.content,
+      newData.progress_state || 1,
+      newData.date || null,
+      task_id,
+    ]);
     const response = await db.one(
       "UPDATE parentTasks SET content = $1, progress_state = $2, date = $3 WHERE id = $4 RETURNING *",
       [
         newData.content,
         newData.progress_state || 1,
-        newData.date || null,
+        newData.date || "null",
         task_id,
       ]
     );
@@ -101,26 +101,10 @@ const editParentTask = async (task_id, newData) => {
 //* Edit the position of a task with task_id
 const editTaskPosition = async (task_id, next_task_id, prev_task_id) => {
   try {
-    let query;
-    let params;
-    if (next_task_id === undefined) {
-      console.log("editTaskPosition: next_task_id WAS UNDEFINED");
-      query =
-        "UPDATE parentTasks SET previews_task_id = $1 WHERE id = $2 RETURNING *";
-      params = [prev_task_id, task_id];
-    } else if (prev_task_id === undefined) {
-      console.log("editTaskPosition: prev_task_id WAS UNDEFINED");
-      query =
-        "UPDATE parentTasks SET next_task_id = $1 WHERE id = $2 RETURNING *";
-      params = [next_task_id, task_id];
-    } else {
-      console.log("editTaskPosition: none were undefined :)");
-      query =
-        "UPDATE parentTasks SET next_task_id = $1, previews_task_id = $2 WHERE id = $3 RETURNING *";
-      params = [next_task_id, prev_task_id, task_id];
-    }
-    const response = await db.one(query, params);
-    console.log("editTaskPosition: RESPONSE:", response);
+    const response = await db.one(
+      "UPDATE parentTasks SET next_task_id = $1, previews_task_id = $2 WHERE id = $3 RETURNING *",
+      [next_task_id, prev_task_id, task_id]
+    );
     return response;
   } catch (error) {
     return error.message;
@@ -130,7 +114,7 @@ const editTaskPosition = async (task_id, next_task_id, prev_task_id) => {
 //* Delete a specific task with task_id
 const deleteParentTask = async (task_id) => {
   try {
-    const response = await db.any(
+    const response = await db.one(
       "DELETE FROM parentTasks WHERE id = $1 RETURNING *",
       [task_id]
     );

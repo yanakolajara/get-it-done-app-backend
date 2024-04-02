@@ -25,7 +25,7 @@ CREATE TABLE parentTasks(
     user_id INTEGER REFERENCES users(id),
     content TEXT,
     progress_state INT CHECK (progress_state >= 1 and progress_state <= 3),
-    date DATE NOT NULL,
+    date VARCHAR(10),
     previews_task_id INTEGER,
     next_task_id INTEGER
 );

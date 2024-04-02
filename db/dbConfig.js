@@ -8,7 +8,7 @@ const cn = {
   user: process.env.PG_USER,
   password: process.env.PG_PASSWORD,
 };
-console.log(cn);
+// console.log(cn);
 
 const db = pgp(cn);
 

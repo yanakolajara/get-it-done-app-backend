@@ -1,196 +1,40 @@
 \c task_app;
 
 -- Users
-INSERT INTO 
+INSERT INTO
     users(firstName, middleName, lastName, email,countryCode,phone,authToken)
 VALUES
     ('Ynk', null, 'laj','ynk@test.com', 52, '1234567890', 'fgf98vYNY78OGFGT4%^UYT4TRTRG'),
     ('Luz', 'ele', 'piz','LUZ@test.com', 431, '9876543210', 'GFGT4%^UYT4TRTRGf98vYNY78Ogf');
-    -- ('John', null, 'Doe','john@example.com', 1, '1111111111', 'abc123'),
-    -- ('Alice', null, 'Smith','alice@example.com', 1, '2222222222', 'def456'),
-    -- ('Bob', null, 'Brown','bob@example.com', 1, '3333333333', 'ghi789'),
-    -- ('Emma', null, 'Johnson','emma@example.com', 1, '4444444444', 'jkl012'),
-    -- ('Michael', null, 'Davis','michael@example.com', 1, '5555555555', 'mno345'),
-    -- ('Sophia', null, 'Wilson','sophia@example.com', 1, '6666666666', 'pqr678'),
-    -- ('David', null, 'Martinez','david@example.com', 1, '7777777777', 'stu901'),
-    -- ('Olivia', null, 'Anderson','olivia@example.com', 1, '8888888888', 'vwx234'),
-    -- ('James', null, 'Taylor','james@example.com', 1, '9999999999', 'yza567'),
-    -- ('Emily', null, 'Thomas','emily@example.com', 1, '1010101010', 'bcd890'),
-    -- ('Daniel', null, 'Moore','daniel@example.com', 1, '1111111112', 'efg123'),
-    -- ('Ava', null, 'Jackson','ava@example.com', 1, '1212121212', 'hij456'),
-    -- ('William', null, 'White','william@example.com', 1, '1313131313', 'klm789'),
-    -- ('Mia', null, 'Harris','mia@example.com', 1, '1414141414', 'nop012'),
-    -- ('Charlotte', null, 'Clark','charlotte@example.com', 1, '1515151515', 'qrs345');
 
--- Parent tasks
-INSERT INTO 
-    parentTasks(user_id, content, progress_state, date, previews_task_id, next_task_id)
-VALUES
-    (1, 'Clean my desk', 2, '2024-03-06', 2, null),
-    (1, 'Organize closet', 1, '2024-03-06', null, 1),
-    (2, 'Study for exam', 1, '2024-03-10', 5, null),
-    (2, 'Exercise routine', 3, '2024-03-12', null, 4);
-    -- (3, 3, 'Task 1 for John', 1, false, '2024-03-14', 1),
-    -- (3, 3, 'Task 2 for John', 2, true, '2024-03-16', 1),
-    -- (4, 4, 'Task 1 for Alice', 2, false, '2024-03-18', 1),
-    -- (4, 4, 'Task 2 for Alice', 3, true, '2024-03-20', 1),
-    -- (5, 5, 'Task 1 for Bob', 1, false, '2024-03-22', 1),
-    -- (5, 5, 'Task 2 for Bob', 2, true, '2024-03-24', 1),
-    -- (6, 6, 'Task 1 for Emma', 2, false, '2024-03-26', 1),
-    -- (6, 6, 'Task 2 for Emma', 3, true, '2024-03-28', 1),
-    -- (7, 7, 'Task 1 for Michael', 1, false, '2024-03-30', 1),
-    -- (7, 7, 'Task 2 for Michael', 2, true, '2024-03-30', 1),
-    -- (7, 7, 'Task 3 for Michael', 2, true, '2024-03-31', 1),
-    -- (8, 8, 'Task 1 for Sophia', 2, false, '2024-04-03', 1),
-    -- (8, 8, 'Task 2 for Sophia', 3, true, '2024-04-05', 1),
-    -- (9, 9, 'Task 1 for David', 1, false, '2024-04-07', 1),
-    -- (9, 9, 'Task 2 for David', 2, true, '2024-04-09', 1),
-    -- (10, 10, 'Task 1 for Olivia', 2, false, '2024-04-11', 1),
-    -- (10, 10, 'Task 2 for Olivia', 3, true, '2024-04-13', 1),
-    -- (11, 11, 'Task 1 for James', 1, false, '2024-04-15', 1),
-    -- (11, 11, 'Task 2 for James', 2, true, '2024-04-17', 1),
-    -- (12, 12, 'Task 1 for Emily', 2, false, '2024-04-19', 1),
-    -- (12, 12, 'Task 2 for Emily', 3, true, '2024-04-21', 1),
-    -- (13, 13, 'Task 1 for Daniel', 1, false, '2024-04-23', 1),
-    -- (13, 13, 'Task 2 for Daniel', 2, true, '2024-04-25', 1),
-    -- (14, 14, 'Task 1 for Ava', 2, false, '2024-04-27', 1),
-    -- (14, 14, 'Task 2 for Ava', 3, true, '2024-04-29', 1),
-    -- (15, 15, 'Task 1 for William', 1, false, '2024-05-01', 1),
-    -- (15, 15, 'Task 2 for William', 2, true, '2024-05-03', 1);
+-- -- Parent tasks
+-- INSERT INTO
+--     parentTasks(user_id, content, progress_state, date, previews_task_id, next_task_id)
+-- VALUES
+--     (1, 'Clean my desk', 2, '2024-03-06', 2, null),
+--     (1, 'Organize closet', 1, '2024-03-06', null, 1),
+--     (2, 'Study for exam', 1, '2024-03-10', 5, null),
+--     (2, 'Exercise routine', 3, '2024-03-12', null, 4);
 
--- Child tasks
-INSERT INTO 
-    childTasks(parentTask_id, content, completed, physical_energy, emotional_energy , previews_task_id, next_task_id)
-VALUES
-    -- Child tasks for Ynk's tasks
-    (1, 'Take the items out', false, 3, 2, null, 2),
-    (1, 'Clean the surface', false, 2, 1, 1, 3),
-    (1, 'Polish the wood', false, 3, 4, 2, 4),
-    (1, 'Put things back', false, 1, 2, 3, null),
-    (2, 'Take clothes out', false, 2, 2, null, 6),
-    (2, 'Sort clothes by type', false, 3, 3, 5, 7),
-    (2, 'Fold clothes neatly', false, 2, 3, 6, 8),
-    (2, 'Arrange clothes in closet', false, 2, null, 7, 9),
-    -- Child tasks for Luz's tasks
-    (3, 'Read Chapter 1', false, 2, 3,1, null),
-    (3, 'Complete Practice Problems', false, 3, 4, 2, 0),
-    (3, 'Review Lecture Notes', false, 2, 2, 3, 1),
-    (3, 'Take Quiz', false, 2, 2, 4, 2),
-    (4, 'Warm-up: Jogging', false, 3, 3, 1, null),
-    (4, 'Strength Training', false, 3, 4, 2, 0),
-    (4, 'Cardio: Running', false, 3, 3, 3, 1),
-    (4, 'Cool Down: Stretching', false, 2, 2, 4, 2);
-    -- Child tasks for John's tasks
-    -- (5, 5, 'John Task 1, Step 1', false, 2, 3, 1),
-    -- (5, 5, 'John Task 1, Step 2', false, 3, 4, 2),
-    -- (5, 5, 'John Task 1, Step 3', false, 2, 2, 3),
-    -- (5, 5, 'John Task 1, Step 4', false, 2, 2, 4),
-    -- (6, 6, 'John Task 2, Step 1', false, 3, 3, 1),
-    -- (6, 6, 'John Task 2, Step 2', false, 3, 4, 2),
-    -- (6, 6, 'John Task 2, Step 3', false, 3, 3, 3),
-    -- (6, 6, 'John Task 2, Step 4', false, 2, 2, 4),
-    -- -- Child tasks for Alice's tasks
-    -- (7, 7, 'Alice Task 1, Step 1', false, 2, 3, 1),
-    -- (7, 7, 'Alice Task 1, Step 2', false, 3, 4, 2),
-    -- (7, 7, 'Alice Task 1, Step 3', false, 2, 2, 3),
-    -- (7, 7, 'Alice Task 1, Step 4', false, 2, 2, 4),
-    -- (8, 8, 'Alice Task 2, Step 1', false, 3, 3, 1),
-    -- (8, 8, 'Alice Task 2, Step 2', false, 3, 4, 2),
-    -- (8, 8, 'Alice Task 2, Step 3', false, 3, 3, 3),
-    -- (8, 8, 'Alice Task 2, Step 4', false, 2, 2, 4),
-    -- -- Child tasks for Bob's tasks
-    -- (9, 9, 'Bob Task 1, Step 1', false, 2, 3, 1),
-    -- (9, 9, 'Bob Task 1, Step 2', false, 3, 4, 2),
-    -- (9, 9, 'Bob Task 1, Step 3', false, 2, 2, 3),
-    -- (9, 9, 'Bob Task 1, Step 4', false, 2, 2, 4),
-    -- (10, 10, 'Bob Task 2, Step 1', false, 3, 3, 1),
-    -- (10, 10, 'Bob Task 2, Step 2', false, 3, 4, 2),
-    -- (10, 10, 'Bob Task 2, Step 3', false, 3, 3, 3),
-    -- (10, 10, 'Bob Task 2, Step 4', false, 2, 2, 4),
-    -- -- Child tasks for Emma's tasks
-    -- (11, 11, 'Emma Task 1, Step 1', false, 2, 3, 1),
-    -- (11, 11, 'Emma Task 1, Step 2', false, 3, 4, 2),
-    -- (11, 11, 'Emma Task 1, Step 3', false, 2, 2, 3),
-    -- (11, 11, 'Emma Task 1, Step 4', false, 2, 2, 4),
-    -- (12, 12, 'Emma Task 2, Step 1', false, 3, 3, 1),
-    -- (12, 12, 'Emma Task 2, Step 2', false, 3, 4, 2),
-    -- (12, 12, 'Emma Task 2, Step 3', false, 3, 3, 3),
-    -- (12, 12, 'Emma Task 2, Step 4', false, 2, 2, 4),
-    -- -- Child tasks for Michael's tasks
-    -- (13, 13, 'Michael Task 1, Step 1', false, 2, 3, 1),
-    -- (13, 13, 'Michael Task 1, Step 2', false, 3, 4, 2),
-    -- (13, 13, 'Michael Task 1, Step 3', false, 2, 2, 3),
-    -- (13, 13, 'Michael Task 1, Step 4', false, 2, 2, 4),
-    -- (14, 14, 'Michael Task 2, Step 1', false, 3, 3, 1),
-    -- (14, 14, 'Michael Task 2, Step 2', false, 3, 4, 2),
-    -- (14, 14, 'Michael Task 2, Step 3', false, 3, 3, 3),
-    -- (14, 14, 'Michael Task 2, Step 4', false, 2, 2, 4),
-    -- -- Child tasks for Sophia's tasks
-    -- (15, 15, 'Sophia Task 1, Step 1', false, 2, 3, 1),
-    -- (15, 15, 'Sophia Task 1, Step 2', false, 3, 4, 2),
-    -- (15, 15, 'Sophia Task 1, Step 3', false, 2, 2, 3),
-    -- (15, 15, 'Sophia Task 1, Step 4', false, 2, 2, 4),
-    -- (16, 16, 'Sophia Task 2, Step 1', false, 3, 3, 1),
-    -- (16, 16, 'Sophia Task 2, Step 2', false, 3, 4, 2),
-    -- (16, 16, 'Sophia Task 2, Step 3', false, 3, 3, 3),
-    -- (16, 16, 'Sophia Task 2, Step 4', false, 2, 2, 4),
-    -- -- Child tasks for David's tasks
-    -- (17, 17, 'David Task 1, Step 1', false, 2, 3, 1),
-    -- (17, 17, 'David Task 1, Step 2', false, 3, 4, 2),
-    -- (17, 17, 'David Task 1, Step 3', false, 2, 2, 3),
-    -- (17, 17, 'David Task 1, Step 4', false, 2, 2, 4),
-    -- (18, 18, 'David Task 2, Step 1', false, 3, 3, 1),
-    -- (18, 18, 'David Task 2, Step 2', false, 3, 4, 2),
-    -- (18, 18, 'David Task 2, Step 3', false, 3, 3, 3),
-    -- (18, 18, 'David Task 2, Step 4', false, 2, 2, 4),
-    -- -- Child tasks for Olivia's tasks
-    -- (19, 19, 'Olivia Task 1, Step 1', false, 2, 3, 1),
-    -- (19, 19, 'Olivia Task 1, Step 2', false, 3, 4, 2),
-    -- (19, 19, 'Olivia Task 1, Step 3', false, 2, 2, 3),
-    -- (19, 19, 'Olivia Task 1, Step 4', false, 2, 2, 4),
-    -- (20, 20, 'Olivia Task 2, Step 1', false, 3, 3, 1),
-    -- (20, 20, 'Olivia Task 2, Step 2', false, 3, 4, 2),
-    -- (20, 20, 'Olivia Task 2, Step 3', false, 3, 3, 3),
-    -- (20, 20, 'Olivia Task 2, Step 4', false, 2, 2, 4),
-    -- -- Child tasks for James's tasks
-    -- (21, 21, 'James Task 1, Step 1', false, 2, 3, 1),
-    -- (21, 21, 'James Task 1, Step 2', false, 3, 4, 2),
-    -- (21, 21, 'James Task 1, Step 3', false, 2, 2, 3),
-    -- (21, 21, 'James Task 1, Step 4', false, 2, 2, 4),
-    -- (22, 22, 'James Task 2, Step 1', false, 3, 3, 1),
-    -- (22, 22, 'James Task 2, Step 2', false, 3, 4, 2),
-    -- (22, 22, 'James Task 2, Step 3', false, 3, 3, 3),
-    -- (22, 22, 'James Task 2, Step 4', false, 2, 2, 4),
-    -- -- Child tasks for Emily's tasks
-    -- (23, 23, 'Emily Task 1, Step 1', false, 2, 3, 1),
-    -- (23, 23, 'Emily Task 1, Step 2', false, 3, 4, 2),
-    -- (23, 23, 'Emily Task 1, Step 3', false, 2, 2, 3),
-    -- (23, 23, 'Emily Task 1, Step 4', false, 2, 2, 4),
-    -- (24, 24, 'Emily Task 2, Step 1', false, 3, 3, 1),
-    -- (24, 24, 'Emily Task 2, Step 2', false, 3, 4, 2),
-    -- (24, 24, 'Emily Task 2, Step 3', false, 3, 3, 3),
-    -- (24, 24, 'Emily Task 2, Step 4', false, 2, 2, 4),
-    -- -- Child tasks for Daniel's tasks
-    -- (25, 25, 'Daniel Task 1, Step 1', false, 2, 3, 1),
-    -- (25, 25, 'Daniel Task 1, Step 2', false, 3, 4, 2),
-    -- (25, 25, 'Daniel Task 1, Step 3', false, 2, 2, 3),
-    -- (25, 25, 'Daniel Task 1, Step 4', false, 2, 2, 4),
-    -- (26, 26, 'Daniel Task 2, Step 1', false, 3, 3, 1),
-    -- (26, 26, 'Daniel Task 2, Step 2', false, 3, 4, 2),
-    -- (26, 26, 'Daniel Task 2, Step 3', false, 3, 3, 3),
-    -- (26, 26, 'Daniel Task 2, Step 4', false, 2, 2, 4),
-    -- -- Child tasks for Ava's tasks
-    -- (27, 27, 'Ava Task 1, Step 1', false, 2, 3, 1),
-    -- (27, 27, 'Ava Task 1, Step 2', false, 3, 4, 2),
-    -- (27, 27, 'Ava Task 1, Step 3', false, 2, 2, 3),
-    -- (27, 27, 'Ava Task 1, Step 4', false, 2, 2, 4),
-    -- (28, 28, 'Ava Task 2, Step 1', false, 3, 3, 1),
-    -- (28, 28, 'Ava Task 2, Step 2', false, 3, 4, 2),
-    -- (28, 28, 'Ava Task 2, Step 3', false, 3, 3, 3),
-    -- (28, 28, 'Ava Task 2, Step 4', false, 2, 2, 4),
-    -- -- Child tasks for William's tasks
-    -- (29, 29, 'William Task 1, Step 1', false, 2, 3, 1),
-    -- (29, 29, 'William Task 1, Step 2', false, 3, 4, 2),
-    -- (29, 29, 'William Task 1, Step 3', false, 2, 2, 3),
-    -- (29, 29, 'William Task 1, Step 4', false, 2, 2, 4);
-
+-- -- Child tasks
+-- INSERT INTO
+--     childTasks(parentTask_id, content, completed, physical_energy, emotional_energy , previews_task_id, next_task_id)
+-- VALUES
+--     -- Child tasks for Ynk's tasks
+--     (1, 'Take the items out', false, 3, 2, null, 2),
+--     (1, 'Clean the surface', false, 2, 1, 1, 3),
+--     (1, 'Polish the wood', false, 3, 4, 2, 4),
+--     (1, 'Put things back', false, 1, 2, 3, null),
+--     (2, 'Take clothes out', false, 2, 2, null, 6),
+--     (2, 'Sort clothes by type', false, 3, 3, 5, 7),
+--     (2, 'Fold clothes neatly', false, 2, 3, 6, 8),
+--     (2, 'Arrange clothes in closet', false, 2, null, 7, 9),
+--     -- Child tasks for Luz's tasks
+--     (3, 'Read Chapter 1', false, 2, 3,1, null),
+--     (3, 'Complete Practice Problems', false, 3, 4, 2, 0),
+--     (3, 'Review Lecture Notes', false, 2, 2, 3, 1),
+--     (3, 'Take Quiz', false, 2, 2, 4, 2),
+--     (4, 'Warm-up: Jogging', false, 3, 3, 1, null),
+--     (4, 'Strength Training', false, 3, 4, 2, 0),
+--     (4, 'Cardio: Running', false, 3, 3, 3, 1),
+--     (4, 'Cool Down: Stretching', false, 2, 2, 4, 2);

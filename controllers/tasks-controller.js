@@ -62,13 +62,15 @@ controller.get("/:user_id/:date", async (req, res) => {
 controller.post("/:user_id", async (req, res) => {
   try {
     const past_task = await getTaskOnTopOfStack(1);
+    console.log("TOP OF TASK: ");
+    console.log(past_task);
     const newParentTask = await createParentTask(
-      req.body,
       req.params.user_id,
-      past_task[0] ? past_task[0].id : null
+      req.body,
+      past_task.length > 0 ? past_task[0].id : null
     );
-    if (past_task[0]) {
-      const past_edited_task = await editTaskPosition(
+    if (!!past_task.length) {
+      const editedTask = await editTaskPosition(
         past_task[0].id,
         newParentTask.id,
         past_task[0].previews_task_id
@@ -89,7 +91,7 @@ controller.post("/:user_id", async (req, res) => {
 controller.put("/:task_id", async (req, res) => {
   try {
     const newParentTask = await editParentTask(req.params.task_id, req.body);
-    if (newParentTask) {
+    if (!newParentTask.length) {
       res.status(200).json(newParentTask);
     } else {
       res.status(404).json({ error: "Task ID was not found" });
@@ -115,7 +117,7 @@ controller.delete("/:task_id", async (req, res) => {
       undefined,
       taskToDelete[0].previews_task_id
     );
-    if (deletedParentTask.length) {
+    if (!deletedParentTask.length) {
       res.status(200).json(deletedParentTask);
     } else {
       res.status(404).json({ error: "Task ID was not found" });
