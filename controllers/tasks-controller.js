@@ -62,8 +62,6 @@ controller.get("/:user_id/:date", async (req, res) => {
 controller.post("/:user_id", async (req, res) => {
   try {
     const past_task = await getTaskOnTopOfStack(1);
-    console.log("TOP OF TASK: ");
-    console.log(past_task);
     const newParentTask = await createParentTask(
       req.params.user_id,
       req.body,

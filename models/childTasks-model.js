@@ -92,7 +92,7 @@ const deleteChildTask = async (task_id) => {
     );
     return response;
   } catch (error) {
-    return error;
+    return error.message;
   }
 };
 

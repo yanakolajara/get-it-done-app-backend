@@ -76,14 +76,18 @@ controller.put("/completionStatus/:task_id", async (req, res) => {
 
 controller.delete("/:task_id", async (req, res) => {
   try {
+    console.log(req.params.task_id);
     const deletedTask = await deleteChildTask(req.params.task_id);
+    console.log("just in case");
     if (deletedTask) {
-      req.status(200).json(deletedTask);
+      res.status(200).json(deletedTask);
+      console.log("I responded 200");
     } else {
       res.status(404).json({ error: "Task not found" });
+      console.log("I responded 404");
     }
   } catch (error) {
-    return error.message;
+    return error;
   }
 });
 

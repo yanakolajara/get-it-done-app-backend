@@ -76,6 +76,7 @@ const createParentTask = async (user_id, data, past_task_id) => {
 
 //* Edit a specific task with task_id
 const editParentTask = async (task_id, newData) => {
+  console.log("editParentTaskProps:", task_id, newData);
   try {
     console.log([
       newData.content,
