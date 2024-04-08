@@ -7,14 +7,14 @@ VALUES
     ('Ynk', null, 'laj','ynk@test.com', 52, '1234567890', 'fgf98vYNY78OGFGT4%^UYT4TRTRG'),
     ('Luz', 'ele', 'piz','LUZ@test.com', 431, '9876543210', 'GFGT4%^UYT4TRTRGf98vYNY78Ogf');
 
--- -- Parent tasks
--- INSERT INTO
---     parentTasks(user_id, content, progress_state, date, previews_task_id, next_task_id)
--- VALUES
---     (1, 'Clean my desk', 2, '2024-03-06', 2, null),
---     (1, 'Organize closet', 1, '2024-03-06', null, 1),
---     (2, 'Study for exam', 1, '2024-03-10', 5, null),
---     (2, 'Exercise routine', 3, '2024-03-12', null, 4);
+-- Parent tasks
+INSERT INTO
+    parentTasks(user_id, content, progress_state, date, previews_task_id, next_task_id)
+VALUES
+    (1, 'Clean my desk', 2, '2024-04-06', 2, null),
+    (1, 'Organize closet', 1, '2024-04-06', null, 1);
+    -- (2, 'Study for exam', 1, '2024-03-10', 4, null),
+    -- (2, 'Exercise routine', 3, '2024-03-12', null, 3);
 
 -- -- Child tasks
 -- INSERT INTO

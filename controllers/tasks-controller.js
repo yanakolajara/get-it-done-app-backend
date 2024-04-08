@@ -10,6 +10,8 @@ const {
   getTaskWithTaskId,
   getTaskOnTopOfStack,
   editTaskPosition,
+  editNextTask,
+  editPrevTask,
 } = require("../models/tasks-model");
 
 controller.get("/", async (req, res) => {
@@ -21,7 +23,7 @@ controller.get("/", async (req, res) => {
       res.status(404).json({ error: "Parent tasks not found" });
     }
   } catch (error) {
-    return error.message;
+    res.status(500).json({ error: "internal server error" });
   }
 });
 
@@ -35,7 +37,7 @@ controller.get("/:user_id", async (req, res) => {
       res.status(404).json({ error: "Parent tasks not found" });
     }
   } catch (error) {
-    return error.message;
+    res.status(500).json({ error: "internal server error" });
   }
 });
 
@@ -53,7 +55,7 @@ controller.get("/:user_id/:date", async (req, res) => {
       res.status(404).json({ error: "There are no tasks on this date" });
     }
   } catch (error) {
-    return error.message;
+    res.status(500).json({ error: "internal server error" });
   }
 });
 
@@ -61,26 +63,20 @@ controller.get("/:user_id/:date", async (req, res) => {
 
 controller.post("/:user_id", async (req, res) => {
   try {
-    const past_task = await getTaskOnTopOfStack(1);
-    const newParentTask = await createParentTask(
+    const currTop = await getTaskOnTopOfStack(1);
+    const newTop = await createParentTask(
       req.params.user_id,
       req.body,
-      past_task.length > 0 ? past_task[0].id : null
+      currTop.id || null
     );
-    if (!!past_task.length) {
-      const editedTask = await editTaskPosition(
-        past_task[0].id,
-        newParentTask.id,
-        past_task[0].previews_task_id
-      );
-    }
-    if (newParentTask) {
-      res.status(201).json(newParentTask);
+    currTop.id && (await editNextTask(currTop.id, newTop.id));
+    if (newTop.id) {
+      res.status(201).json(newTop);
     } else {
       res.status(500).json({ error: "Task not created" });
     }
   } catch (error) {
-    return error.message;
+    res.status(500).json({ error: "internal server error" });
   }
 });
 
@@ -95,7 +91,7 @@ controller.put("/:task_id", async (req, res) => {
       res.status(404).json({ error: "Task ID was not found" });
     }
   } catch (error) {
-    return error.message;
+    res.status(500).json({ error: "internal server error" });
   }
 });
 
@@ -103,25 +99,13 @@ controller.put("/:task_id", async (req, res) => {
 
 controller.delete("/:task_id", async (req, res) => {
   try {
-    const taskToDelete = await getTaskWithTaskId(req.params.task_id);
-    const deletedParentTask = await deleteParentTask(req.params.task_id);
-    const prevTask = await editTaskPosition(
-      taskToDelete[0].previews_task_id,
-      taskToDelete[0].next_task_id,
-      undefined
-    );
-    const nextTask = await editTaskPosition(
-      taskToDelete[0].next_task_id,
-      undefined,
-      taskToDelete[0].previews_task_id
-    );
-    if (!deletedParentTask.length) {
-      res.status(200).json(deletedParentTask);
-    } else {
-      res.status(404).json({ error: "Task ID was not found" });
-    }
+    let target = await getTaskWithTaskId(req.params.task_id);
+    await editNextTask(target.previews_task_id, target.next_task_id);
+    await editPrevTask(target.next_task_id, target.previews_task_id);
+    await deleteParentTask(target.id);
+    res.status(200).json(target);
   } catch (error) {
-    return error.message;
+    res.status(500).json({ error: "internal server error" });
   }
 });
 

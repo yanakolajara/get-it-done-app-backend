@@ -25,7 +25,7 @@ const getAllParentTasksFromUserId = async (user_id) => {
 //* Get specific task with task_id
 const getTaskWithTaskId = async (task_id) => {
   try {
-    const data = await db.any("SELECT * FROM parentTasks WHERE id = $1", [
+    const data = await db.one("SELECT * FROM parentTasks WHERE id = $1", [
       task_id,
     ]);
     return data;
@@ -37,11 +37,10 @@ const getTaskWithTaskId = async (task_id) => {
 //* Get the task on top of stack
 const getTaskOnTopOfStack = async (user_id) => {
   try {
-    const data = await db.any(
+    const data = await db.one(
       "SELECT * FROM parentTasks WHERE next_task_id IS NULL AND user_id = $1",
       [user_id]
     );
-
     return data;
   } catch (error) {
     return error.message;
@@ -76,14 +75,7 @@ const createParentTask = async (user_id, data, past_task_id) => {
 
 //* Edit a specific task with task_id
 const editParentTask = async (task_id, newData) => {
-  console.log("editParentTaskProps:", task_id, newData);
   try {
-    console.log([
-      newData.content,
-      newData.progress_state || 1,
-      newData.date || null,
-      task_id,
-    ]);
     const response = await db.one(
       "UPDATE parentTasks SET content = $1, progress_state = $2, date = $3 WHERE id = $4 RETURNING *",
       [
@@ -105,6 +97,30 @@ const editTaskPosition = async (task_id, next_task_id, prev_task_id) => {
     const response = await db.one(
       "UPDATE parentTasks SET next_task_id = $1, previews_task_id = $2 WHERE id = $3 RETURNING *",
       [next_task_id, prev_task_id, task_id]
+    );
+    return response;
+  } catch (error) {
+    return error.message;
+  }
+};
+
+const editNextTask = async (task_id, next_task_id) => {
+  try {
+    const response = await db.one(
+      "UPDATE parentTasks SET next_task_id = $1 WHERE id = $2 RETURNING *",
+      [next_task_id, task_id]
+    );
+    return response;
+  } catch (error) {
+    return error.message;
+  }
+};
+
+const editPrevTask = async (task_id, previews_task_id) => {
+  try {
+    const response = await db.one(
+      "UPDATE parentTasks SET previews_task_id = $1 WHERE id = $2 RETURNING *",
+      [previews_task_id, task_id]
     );
     return response;
   } catch (error) {
@@ -135,4 +151,6 @@ module.exports = {
   getTaskWithTaskId,
   getTaskOnTopOfStack,
   editTaskPosition,
+  editNextTask,
+  editPrevTask,
 };
