@@ -8,7 +8,7 @@ const {
   editChildTaskPosition,
   deleteChildTask,
   editChildTaskCompletionStatus,
-} = require("../models/childTasks-model");
+} = require("../models/steps-model");
 
 controller.get("/", async (req, res) => {
   try {

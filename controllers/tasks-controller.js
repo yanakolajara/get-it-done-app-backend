@@ -1,105 +1,78 @@
 const express = require("express");
 const controller = express.Router();
 const {
-  getAllParentTasks,
-  createParentTask,
-  getAllParentTasksFromUserId,
-  getSpecificDateParentTasksFromUser,
-  editParentTask,
+  createTask,
+  getUserTasks,
+  getTasksWithDate,
+  getTask,
+  editTask,
   deleteParentTask,
-  getTaskWithTaskId,
-  getTaskOnTopOfStack,
-  editTaskPosition,
+  getTaskOnTop,
   editNextTask,
   editPrevTask,
 } = require("../models/tasks-model");
 
-controller.get("/", async (req, res) => {
-  try {
-    const data = await getAllParentTasks();
-    if (data.length) {
-      res.status(200).json(data);
-    } else {
-      res.status(404).json({ error: "Parent tasks not found" });
-    }
-  } catch (error) {
-    res.status(500).json({ error: "internal server error" });
-  }
-});
-
-//* Get tasks with user_id
+//* Get tasks from user_id
 controller.get("/:user_id", async (req, res) => {
+  const { user_id } = req.params;
   try {
-    const data = await getAllParentTasksFromUserId(req.params.user_id);
-    if (data.length) {
-      res.status(200).json(data);
-    } else {
-      res.status(404).json({ error: "Parent tasks not found" });
-    }
+    await getUserTasks(user_id).then((data) => {
+      if (data.length) res.status(200).json(data);
+      else res.status(404).json({ error: "Parent tasks not found" });
+    });
   } catch (error) {
     res.status(500).json({ error: "internal server error" });
   }
 });
 
-//* Get tasks with user_id from specific Date
-
+//* Get tasks from user_id from specific Date
 controller.get("/:user_id/:date", async (req, res) => {
+  const { user_id, date } = req.params;
   try {
-    const data = await getSpecificDateParentTasksFromUser(
-      req.params.user_id,
-      req.params.date
-    );
-    if (data.length) {
-      res.status(200).json(data);
-    } else {
-      res.status(404).json({ error: "There are no tasks on this date" });
-    }
+    await getTasksWithDate(user_id, date).then((data) => {
+      if (data.length) res.status(200).json(data);
+      else res.status(404).json({ error: "There are no tasks on this date" });
+    });
   } catch (error) {
     res.status(500).json({ error: "internal server error" });
   }
 });
 
 //* Create new task with user_id
-
 controller.post("/:user_id", async (req, res) => {
+  const { user_id } = req.params;
+  const currTop = await getTaskOnTop(user_id);
   try {
-    const currTop = await getTaskOnTopOfStack(1);
-    const newTop = await createParentTask(
-      req.params.user_id,
-      req.body,
-      currTop.id || null
-    );
-    currTop.id && (await editNextTask(currTop.id, newTop.id));
-    if (newTop.id) {
-      res.status(201).json(newTop);
+    const newTask = await createTask(user_id, req.body, currTop.id);
+    await editNextTask(currTop.id, newTask.id);
+    if (newTask) {
+      res.status(201).json(currTop);
     } else {
       res.status(500).json({ error: "Task not created" });
     }
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "internal server error" });
   }
 });
 
 //* Edit a specific task with task_id
-
 controller.put("/:task_id", async (req, res) => {
+  const { task_id } = req.params;
   try {
-    const newParentTask = await editParentTask(req.params.task_id, req.body);
-    if (!newParentTask.length) {
-      res.status(200).json(newParentTask);
-    } else {
-      res.status(404).json({ error: "Task ID was not found" });
-    }
+    await editTask(task_id, req.body).then((task) => {
+      if (task) res.status(200).json(task);
+      else res.status(404).json({ error: "Task ID was not found" });
+    });
   } catch (error) {
     res.status(500).json({ error: "internal server error" });
   }
 });
 
 //* Delete a specific task with task_id
-
 controller.delete("/:task_id", async (req, res) => {
   try {
-    let target = await getTaskWithTaskId(req.params.task_id);
+    const target = await getTask(req.params.task_id);
     await editNextTask(target.previews_task_id, target.next_task_id);
     await editPrevTask(target.next_task_id, target.previews_task_id);
     await deleteParentTask(target.id);
