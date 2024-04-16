@@ -1,56 +1,47 @@
 const db = require("../db/dbConfig");
 
-//* Get childTasks with task_id
-
-const getAllChildTasks = async () => {
+const getSteps = async ({ task_id }) => {
   try {
-    const data = await db.any("SELECT * FROM childTasks");
-    return data;
-  } catch (error) {
-    return error.message;
-  }
-};
-const getChildTasksFromTaskId = async (task_id) => {
-  try {
-    const data = await db.any(
-      "SELECT * FROM childTasks WHERE parentTask_id = $1",
-      [task_id]
-    );
-    return data;
+    return await db.any("SELECT * FROM steps WHERE task_id = $1", [task_id]);
   } catch (error) {
     return error.message;
   }
 };
 
-const getTaskOnTopOfQueue = async (task_id) => {
+const getStep = async ({ step_id }) => {
   try {
-    const data = await db.any(
-      "SELECT * FROM childTasks WHERE next_task_id IS NULL AND parentTask_id = $1",
+    return await db.oneOrNone("SELECT * FROM steps WHERE id = $1", [step_id]);
+  } catch (error) {
+    return error.message;
+  }
+};
+
+const getStepOnTop = async ({ task_id }) => {
+  try {
+    return await db.oneOrNone(
+      "SELECT * FROM steps WHERE next_task_id IS NULL AND task_id = $1",
       [task_id]
     );
-    return data;
   } catch (error) {
     return error.message;
   }
 };
 
 //* Create new task with task_id
-
-const createChildTask = async (parentTask_id, data, past_task_id) => {
+const createStep = async ({ task_id, data, currTopId }) => {
   try {
-    const response = await db.one(
-      "INSERT INTO childTasks(parentTask_id, content, completed, physical_energy, emotional_energy , previews_task_id, next_task_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+    return await db.oneOrNone(
+      "INSERT INTO steps(task_id, content, completed, physical_energy, emotional_energy , previews_task_id, next_task_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
       [
-        parentTask_id,
+        task_id,
         data.content,
         false,
-        data.physical_energy || 0,
-        data.emotional_energy || 0,
-        past_task_id,
+        data.physical_energy,
+        data.emotional_energy,
+        currTopId,
         null,
       ]
     );
-    return response;
   } catch (error) {
     return error.message;
   }
@@ -58,38 +49,63 @@ const createChildTask = async (parentTask_id, data, past_task_id) => {
 
 //* Edit a specific task with task_id
 
-const editChildTaskPosition = async (task_id, next_task_id, prev_task_id) => {
+// const editChildTaskPosition = async (task_id, next_task_id, prev_task_id) => {
+//   try {
+//     const response = await db.one(
+//       "UPDATE steps SET next_task_id = $1, previews_task_id = $2 WHERE id = $3 RETURNING *",
+//       [next_task_id, prev_task_id, task_id]
+//     );
+//     return response;
+//   } catch (error) {
+//     return error.message;
+//   }
+// };
+
+const editStep = async ({ step_id, data }) => {
   try {
-    const response = await db.one(
-      "UPDATE childTasks SET next_task_id = $1, previews_task_id = $2 WHERE id = $3 RETURNING *",
-      [next_task_id, prev_task_id, task_id]
+    return await db.oneOrNone(
+      "UPDATE steps SET content = $1, completed = $2, physical_energy = $3, emotional_energy = $4 WHERE id = $5 RETURNING *",
+      [
+        data.content,
+        data.completed,
+        data.physical_energy,
+        data.emotional_energy,
+        step_id,
+      ]
     );
-    return response;
   } catch (error) {
     return error.message;
   }
 };
 
-const editChildTaskCompletionStatus = async (task_id, isCompleted) => {
+const editNextStep = async ({ currStep, nextStep }) => {
   try {
-    const response = await db.one(
-      "UPDATE childTasks SET completed = $1 WHERE id = $2 RETURNING *",
-      [isCompleted, task_id]
+    return await db.oneOrNone(
+      "UPDATE steps SET next_step_id = $1 WHERE id = $2 RETURNING *",
+      [nextStep, currStep]
     );
-    return response;
+  } catch (error) {
+    return error.message;
+  }
+};
+
+const editPrevStep = async ({ currStep, prevStep }) => {
+  try {
+    return await db.oneOrNone(
+      "UPDATE steps SET previews_step_id = $1 WHERE id = $2 RETURNING *",
+      [prevStep, currStep]
+    );
   } catch (error) {
     return error.message;
   }
 };
 
 //* Delete a specific task with task_id
-
-const deleteChildTask = async (task_id) => {
+const deleteStep = async ({ step_id }) => {
   try {
-    const response = await db.one(
-      "DELETE FROM childTasks WHERE id = $1 RETURNING *",
-      [task_id]
-    );
+    return await db.one("DELETE FROM steps WHERE id = $1 RETURNING *", [
+      step_id,
+    ]);
     return response;
   } catch (error) {
     return error.message;
@@ -97,11 +113,12 @@ const deleteChildTask = async (task_id) => {
 };
 
 module.exports = {
-  getAllChildTasks,
-  getChildTasksFromTaskId,
-  getTaskOnTopOfQueue,
-  createChildTask,
-  editChildTaskPosition,
-  deleteChildTask,
-  editChildTaskCompletionStatus,
+  getSteps,
+  getStep,
+  getStepOnTop,
+  createStep,
+  editStep,
+  editNextStep,
+  editPrevStep,
+  deleteStep,
 };

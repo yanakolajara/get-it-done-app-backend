@@ -17,8 +17,9 @@ controller.get("/:user_id", async (req, res) => {
   const { user_id } = req.params;
   try {
     await getUserTasks({ user_id: user_id }).then((data) => {
-      if (data.length) res.status(200).json(data);
-      else res.status(404).json({ error: "Parent tasks not found" });
+      data.length
+        ? res.status(200).json(data)
+        : res.status(404).json({ error: "Parent tasks not found" });
     });
   } catch (error) {
     res.status(500).json({ error: "internal server error" });
@@ -33,8 +34,9 @@ controller.get("/:user_id/:date", async (req, res) => {
       user_id: user_id,
       date: date,
     }).then((data) => {
-      if (data.length) res.status(200).json(data);
-      else res.status(404).json({ error: "There are no tasks on this date" });
+      data.length
+        ? res.status(200).json(data)
+        : res.status(404).json({ error: "There are no tasks on this date" });
     });
   } catch (error) {
     res.status(500).json({ error: "internal server error" });
@@ -76,8 +78,9 @@ controller.put("/:task_id", async (req, res) => {
       task_id: task_id,
       data: req.body,
     }).then((task) => {
-      if (task) res.status(200).json(task);
-      else res.status(404).json({ error: "Task ID was not found" });
+      task
+        ? res.status(200).json(task)
+        : res.status(404).json({ error: "Task ID was not found" });
     });
   } catch (error) {
     res.status(500).json({ error: "internal server error" });

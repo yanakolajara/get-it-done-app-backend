@@ -1,93 +1,96 @@
 const express = require("express");
 const controller = express.Router();
 const {
-  getChildTasksFromTaskId,
-  getAllChildTasks,
-  getTaskOnTopOfQueue,
-  createChildTask,
-  editChildTaskPosition,
-  deleteChildTask,
-  editChildTaskCompletionStatus,
+  getSteps,
+  getStep,
+  getStepOnTop,
+  createStep,
+  editStep,
+  editNextStep,
+  editPrevStep,
+  deleteStep,
 } = require("../models/steps-model");
 
-controller.get("/", async (req, res) => {
-  try {
-    const data = await getAllChildTasks();
-    res.status(200).json(data);
-  } catch (error) {
-    return error.message;
-  }
-});
-
 controller.get("/:task_id", async (req, res) => {
+  const { task_id } = req.params;
   try {
-    const data = await getChildTasksFromTaskId(req.params.task_id);
-    if (data.length) {
-      res.status(200).json(data);
-    } else {
-      res.status(200).json({ message: "Child tasks not found" });
-    }
+    await getSteps(task_id).then((data) => {
+      data.length
+        ? res.status(200).json(data)
+        : res.status(200).json({ message: "Child tasks not found" });
+    });
   } catch (error) {
     return error.message;
   }
 });
 
 controller.post("/:task_id", async (req, res) => {
+  const { task_id } = req.params;
   try {
-    const past_task = await getTaskOnTopOfQueue(req.params.task_id);
-    const newChildTask = await createChildTask(
-      req.params.task_id,
-      req.body,
-      past_task.length > 0 ? past_task[0].id : null
-    );
-    if (!!past_task.length) {
-      const editedTask = await editChildTaskPosition(
-        past_task[0].id,
-        newChildTask.id,
-        past_task[0].previews_task_id
-      );
-    }
-
-    if (newChildTask) {
-      res.status(200).json(newChildTask);
-    } else {
-      res.status(500).json({ error: "Task not created" });
-    }
+    await getStepOnTop({ task_id: task_id })
+      .then(async (currTop) => {
+        return await createStep({
+          task_id: task_id,
+          data: req.body,
+          currTopId: currTop.id,
+        });
+      })
+      .then(async (newStep) => {
+        await editNextStep({
+          currStep: newStep.previews_step_id,
+          nextStep: newStep.id,
+        });
+        return newStep;
+      })
+      .then((newStep) => {
+        newStep
+          ? res.status(200).json(newStep)
+          : res.status(500).json({ error: "Step not created" });
+      });
   } catch (error) {
     return error.message;
   }
 });
 
-controller.put("/completionStatus/:task_id", async (req, res) => {
+controller.put("/:step_id", async (req, res) => {
+  const { step_id } = req.params;
   try {
-    const editedTask = await editChildTaskCompletionStatus(
-      req.params.task_id,
-      req.body.isCompleted
-    );
-    if (editedTask) {
-      res.status(200).json(editedTask);
-    } else {
-      res.status(404).json({ error: "" });
-    }
+    await editStep({
+      step_id: step_id,
+      data: req.body,
+    }).then((data) => {
+      data ? res.status(200).json(data) : res.status(404).json({ error: "" });
+    });
   } catch (error) {
     return error.message;
   }
 });
 
-controller.delete("/:task_id", async (req, res) => {
+controller.delete("/:step_id", async (req, res) => {
+  const { step_id } = req.params;
   try {
-    console.log(req.params.task_id);
-    const deletedTask = await deleteChildTask(req.params.task_id);
-    console.log("just in case");
-    if (deletedTask) {
-      res.status(200).json(deletedTask);
-      console.log("I responded 200");
-    } else {
-      res.status(404).json({ error: "Task not found" });
-      console.log("I responded 404");
-    }
+    await getStep({ step_id: step_id })
+      .then(async (target) => {
+        await editNextStep({
+          currStep: target.previews_step_id,
+          nextStep: target.next_step_id,
+        });
+        return target;
+      })
+      .then(async (target) => {
+        await editPrevStep({
+          currStep: target.next_step_id,
+          prevStep: target.previews_step_id,
+        });
+        return target;
+      })
+      .then(async (target) => {
+        await deleteStep({ step_id: target.id });
+        return target;
+      })
+      .then((target) => res.status(200).json(target));
   } catch (error) {
-    return error;
+    res.status(500).json({ error: "internal server error" });
   }
 });
 
