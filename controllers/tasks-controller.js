@@ -16,7 +16,7 @@ const {
 controller.get("/:user_id", async (req, res) => {
   const { user_id } = req.params;
   try {
-    await getUserTasks(user_id).then((data) => {
+    await getUserTasks({ user_id: user_id }).then((data) => {
       if (data.length) res.status(200).json(data);
       else res.status(404).json({ error: "Parent tasks not found" });
     });
@@ -29,7 +29,10 @@ controller.get("/:user_id", async (req, res) => {
 controller.get("/:user_id/:date", async (req, res) => {
   const { user_id, date } = req.params;
   try {
-    await getTasksWithDate(user_id, date).then((data) => {
+    await getTasksWithDate({
+      user_id: user_id,
+      date: date,
+    }).then((data) => {
       if (data.length) res.status(200).json(data);
       else res.status(404).json({ error: "There are no tasks on this date" });
     });
@@ -41,15 +44,25 @@ controller.get("/:user_id/:date", async (req, res) => {
 //* Create new task with user_id
 controller.post("/:user_id", async (req, res) => {
   const { user_id } = req.params;
-  const currTop = await getTaskOnTop(user_id);
   try {
-    const newTask = await createTask(user_id, req.body, currTop.id);
-    await editNextTask(currTop.id, newTask.id);
-    if (newTask) {
-      res.status(201).json(currTop);
-    } else {
-      res.status(500).json({ error: "Task not created" });
-    }
+    await getTaskOnTop({ user_id: user_id })
+      .then(async (currTop) => {
+        return await createTask({
+          user_id: user_id,
+          data: req.body,
+          currTopId: currTop.id,
+        });
+      })
+      .then(async (newTask) => {
+        await editNextTask({
+          currTop: newTask.previews_task_id,
+          nextTask: newTask.id,
+        });
+        return newTask;
+      })
+      .finally((newTask) => {
+        res.status(201).json(newTask);
+      });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "internal server error" });

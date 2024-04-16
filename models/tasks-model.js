@@ -1,30 +1,28 @@
 const db = require("../db/dbConfig");
 
 //* Get tasks from user_id
-const getUserTasks = async (user_id) => {
+const getUserTasks = async ({ user_id }) => {
   try {
-    return await db.any("SELECT * FROM parentTasks WHERE user_id = $1", [
-      user_id,
-    ]);
+    return await db.any("SELECT * FROM tasks WHERE user_id = $1", [user_id]);
   } catch (error) {
     return error.message;
   }
 };
 
 //* Get specific task from task_id
-const getTask = async (task_id) => {
+const getTask = async ({ task_id }) => {
   try {
-    return await db.one("SELECT * FROM parentTasks WHERE id = $1", [task_id]);
+    return await db.one("SELECT * FROM tasks WHERE id = $1", [task_id]);
   } catch (error) {
     return error.message;
   }
 };
 
 //* Get the task on top of stack
-const getTaskOnTop = async (user_id) => {
+const getTaskOnTop = async ({ user_id }) => {
   try {
     return await db.oneOrNone(
-      "SELECT * FROM parentTasks WHERE next_task_id IS NULL AND user_id = $1",
+      "SELECT * FROM tasks WHERE next_task_id IS NULL AND user_id = $1",
       [user_id]
     );
   } catch (error) {
@@ -33,10 +31,10 @@ const getTaskOnTop = async (user_id) => {
 };
 
 //* Get tasks with user_id from specific Date
-const getTasksWithDate = async (user_id, date) => {
+const getTasksWithDate = async ({ user_id, date }) => {
   try {
     const data = await db.any(
-      "SELECT * FROM parentTasks WHERE user_id = $1 AND date = $2",
+      "SELECT * FROM tasks WHERE user_id = $1 AND date = $2",
       [user_id, date]
     );
     return data;
@@ -46,11 +44,11 @@ const getTasksWithDate = async (user_id, date) => {
 };
 
 //* Create new task with user_id
-const createTask = async (user_id, data, past_task_id) => {
+const createTask = async ({ user_id, data, currentTopId }) => {
   try {
     return await db.oneOrNone(
-      "INSERT INTO parentTasks(user_id, content, progress_state, date, previews_task_id, next_task_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
-      [user_id, data.content, 1, data.date, past_task_id, null]
+      "INSERT INTO tasks(user_id, content, date, previews_task_id, next_task_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [user_id, data.content, , data.date, currentTopId, null]
     );
   } catch (error) {
     return error.message;
@@ -58,16 +56,11 @@ const createTask = async (user_id, data, past_task_id) => {
 };
 
 //* Edit a specific task with task_id
-const editTask = async (task_id, newData) => {
+const editTask = async ({ task_id, data }) => {
   try {
     return await db.oneOrNone(
-      "UPDATE parentTasks SET content = $1, progress_state = $2, date = $3 WHERE id = $4 RETURNING *",
-      [
-        newData.content,
-        newData.progress_state || 1,
-        newData.date || "null",
-        task_id,
-      ]
+      "UPDATE tasks SET content = $1, completed = $2, date = $3 WHERE id = $4 RETURNING *",
+      [data.content, data.completed, data.date, task_id]
     );
   } catch (error) {
     return error.message;
@@ -78,7 +71,7 @@ const editTask = async (task_id, newData) => {
 const editTaskPosition = async (task_id, next_task_id, prev_task_id) => {
   try {
     const response = await db.one(
-      "UPDATE parentTasks SET next_task_id = $1, previews_task_id = $2 WHERE id = $3 RETURNING *",
+      "UPDATE tasks SET next_task_id = $1, previews_task_id = $2 WHERE id = $3 RETURNING *",
       [next_task_id, prev_task_id, task_id]
     );
     return response;
@@ -87,11 +80,11 @@ const editTaskPosition = async (task_id, next_task_id, prev_task_id) => {
   }
 };
 
-const editNextTask = async (task_id, next_task_id) => {
+const editNextTask = async ({ currTop, nextTask }) => {
   try {
     const response = await db.oneOrNone(
-      "UPDATE parentTasks SET next_task_id = $1 WHERE id = $2 RETURNING *",
-      [next_task_id, task_id]
+      "UPDATE tasks SET next_task_id = $1 WHERE id = $2 RETURNING *",
+      [nextTask, currTop]
     );
     return response;
   } catch (error) {
@@ -103,7 +96,7 @@ const editNextTask = async (task_id, next_task_id) => {
 const editPrevTask = async (task_id, previews_task_id) => {
   try {
     const response = await db.one(
-      "UPDATE parentTasks SET previews_task_id = $1 WHERE id = $2 RETURNING *",
+      "UPDATE tasks SET previews_task_id = $1 WHERE id = $2 RETURNING *",
       [previews_task_id, task_id]
     );
     return response;
@@ -116,7 +109,7 @@ const editPrevTask = async (task_id, previews_task_id) => {
 const deleteParentTask = async (task_id) => {
   try {
     const response = await db.one(
-      "DELETE FROM parentTasks WHERE id = $1 RETURNING *",
+      "DELETE FROM tasks WHERE id = $1 RETURNING *",
       [task_id]
     );
     return response;
