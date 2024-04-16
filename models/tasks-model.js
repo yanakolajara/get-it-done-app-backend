@@ -44,11 +44,11 @@ const getTasksWithDate = async ({ user_id, date }) => {
 };
 
 //* Create new task with user_id
-const createTask = async ({ user_id, data, currentTopId }) => {
+const createTask = async ({ user_id, data, currTopId }) => {
   try {
     return await db.oneOrNone(
       "INSERT INTO tasks(user_id, content, date, previews_task_id, next_task_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-      [user_id, data.content, , data.date, currentTopId, null]
+      [user_id, data.content, data.date, currTopId, null]
     );
   } catch (error) {
     return error.message;

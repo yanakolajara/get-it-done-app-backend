@@ -60,11 +60,10 @@ controller.post("/:user_id", async (req, res) => {
         });
         return newTask;
       })
-      .finally((newTask) => {
+      .then((newTask) => {
         res.status(201).json(newTask);
       });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ error: "internal server error" });
   }
 });
