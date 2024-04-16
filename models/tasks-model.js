@@ -12,7 +12,7 @@ const getUserTasks = async ({ user_id }) => {
 //* Get specific task from task_id
 const getTask = async ({ task_id }) => {
   try {
-    return await db.one("SELECT * FROM tasks WHERE id = $1", [task_id]);
+    return await db.oneOrNone("SELECT * FROM tasks WHERE id = $1", [task_id]);
   } catch (error) {
     return error.message;
   }
@@ -80,39 +80,35 @@ const editTaskPosition = async (task_id, next_task_id, prev_task_id) => {
   }
 };
 
-const editNextTask = async ({ currTop, nextTask }) => {
+const editNextTask = async ({ currTask, nextTask }) => {
   try {
-    const response = await db.oneOrNone(
+    return await db.oneOrNone(
       "UPDATE tasks SET next_task_id = $1 WHERE id = $2 RETURNING *",
-      [nextTask, currTop]
+      [nextTask, currTask]
     );
-    return response;
   } catch (error) {
     console.log("FDASFDSAf");
     return error.message;
   }
 };
 
-const editPrevTask = async (task_id, previews_task_id) => {
+const editPrevTask = async ({ currTask, prevTask }) => {
   try {
-    const response = await db.one(
+    return await db.oneOrNone(
       "UPDATE tasks SET previews_task_id = $1 WHERE id = $2 RETURNING *",
-      [previews_task_id, task_id]
+      [prevTask, currTask]
     );
-    return response;
   } catch (error) {
     return error.message;
   }
 };
 
 //* Delete a specific task with task_id
-const deleteParentTask = async (task_id) => {
+const deleteTask = async ({ task_id }) => {
   try {
-    const response = await db.one(
-      "DELETE FROM tasks WHERE id = $1 RETURNING *",
-      [task_id]
-    );
-    return response;
+    return await db.oneOrNone("DELETE FROM tasks WHERE id = $1 RETURNING *", [
+      task_id,
+    ]);
   } catch (error) {
     return error;
   }
@@ -128,5 +124,5 @@ module.exports = {
   editPrevTask,
   editTaskPosition,
   createTask,
-  deleteParentTask,
+  deleteTask,
 };

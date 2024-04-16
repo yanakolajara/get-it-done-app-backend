@@ -6,7 +6,7 @@ const {
   getTasksWithDate,
   getTask,
   editTask,
-  deleteParentTask,
+  deleteTask,
   getTaskOnTop,
   editNextTask,
   editPrevTask,
@@ -55,7 +55,7 @@ controller.post("/:user_id", async (req, res) => {
       })
       .then(async (newTask) => {
         await editNextTask({
-          currTop: newTask.previews_task_id,
+          currTask: newTask.previews_task_id,
           nextTask: newTask.id,
         });
         return newTask;
@@ -72,7 +72,10 @@ controller.post("/:user_id", async (req, res) => {
 controller.put("/:task_id", async (req, res) => {
   const { task_id } = req.params;
   try {
-    await editTask(task_id, req.body).then((task) => {
+    await editTask({
+      task_id: task_id,
+      data: req.body,
+    }).then((task) => {
       if (task) res.status(200).json(task);
       else res.status(404).json({ error: "Task ID was not found" });
     });
@@ -83,12 +86,28 @@ controller.put("/:task_id", async (req, res) => {
 
 //* Delete a specific task with task_id
 controller.delete("/:task_id", async (req, res) => {
+  const { task_id } = req.params;
   try {
-    const target = await getTask(req.params.task_id);
-    await editNextTask(target.previews_task_id, target.next_task_id);
-    await editPrevTask(target.next_task_id, target.previews_task_id);
-    await deleteParentTask(target.id);
-    res.status(200).json(target);
+    await getTask({ task_id: task_id })
+      .then(async (target) => {
+        await editNextTask({
+          currTask: target.previews_task_id,
+          nextTask: target.next_task_id,
+        });
+        return target;
+      })
+      .then(async (target) => {
+        await editPrevTask({
+          currTask: target.next_task_id,
+          prevTask: target.previews_task_id,
+        });
+        return target;
+      })
+      .then(async (target) => {
+        await deleteTask({ task_id: target.id });
+        return target;
+      })
+      .then((target) => res.status(200).json(target));
   } catch (error) {
     res.status(500).json({ error: "internal server error" });
   }
