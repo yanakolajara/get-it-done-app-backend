@@ -87,7 +87,6 @@ const editNextTask = async ({ currTask, nextTask }) => {
       [nextTask, currTask]
     );
   } catch (error) {
-    console.log("FDASFDSAf");
     return error.message;
   }
 };

@@ -31,7 +31,7 @@ const getStepOnTop = async ({ task_id }) => {
 const createStep = async ({ task_id, data, currTopId }) => {
   try {
     return await db.oneOrNone(
-      "INSERT INTO steps(task_id, content, completed, physical_energy, emotional_energy , previews_task_id, next_task_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+      "INSERT INTO steps(task_id, content, completed, physical_energy, emotional_energy , previews_step_id, next_step_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
       [
         task_id,
         data.content,

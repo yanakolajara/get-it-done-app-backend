@@ -38,3 +38,4 @@ VALUES
     (4, 'Strength Training', false, 3, 4, 2, 0),
     (4, 'Cardio: Running', false, 3, 3, 3, 1),
     (4, 'Cool Down: Stretching', false, 2, 2, 4, 2);
+

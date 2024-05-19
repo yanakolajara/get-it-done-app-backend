@@ -14,7 +14,7 @@ const {
 controller.get("/:task_id", async (req, res) => {
   const { task_id } = req.params;
   try {
-    await getSteps(task_id).then((data) => {
+    await getSteps({ task_id: task_id }).then((data) => {
       data.length
         ? res.status(200).json(data)
         : res.status(200).json({ message: "Child tasks not found" });

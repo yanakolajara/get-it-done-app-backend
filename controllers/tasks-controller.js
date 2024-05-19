@@ -11,6 +11,7 @@ const {
   editNextTask,
   editPrevTask,
 } = require("../models/tasks-model");
+const { getDayStr } = require("../utils/dateUtils");
 
 //* Get tasks from user_id
 controller.get("/:user_id", async (req, res) => {
@@ -31,8 +32,8 @@ controller.get("/:user_id/:date", async (req, res) => {
   const { user_id, date } = req.params;
   try {
     await getTasksWithDate({
-      user_id: user_id,
-      date: date,
+      user_id,
+      date,
     }).then((data) => {
       data.length
         ? res.status(200).json(data)
@@ -47,11 +48,14 @@ controller.get("/:user_id/:date", async (req, res) => {
 controller.post("/:user_id", async (req, res) => {
   const { user_id } = req.params;
   try {
-    await getTaskOnTop({ user_id: user_id })
+    await getTaskOnTop({ user_id })
       .then(async (currTop) => {
         return await createTask({
-          user_id: user_id,
-          data: req.body,
+          user_id,
+          data: {
+            ...req.body,
+            date: req.body.date ?? getDayStr(),
+          },
           currTopId: currTop.id,
         });
       })
