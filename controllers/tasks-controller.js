@@ -3,7 +3,6 @@ const controller = express.Router();
 const {
   createTask,
   getUserTasks,
-  getTasksWithDate,
   getTask,
   editTask,
   deleteTask,
@@ -16,28 +15,15 @@ const { getDayStr } = require("../utils/dateUtils");
 //* Get tasks from user_id
 controller.get("/:user_id", async (req, res) => {
   const { user_id } = req.params;
+  const { date } = req.query;
   try {
-    await getUserTasks({ user_id: user_id }).then((data) => {
-      data.length
-        ? res.status(200).json(data)
-        : res.status(404).json({ error: "Parent tasks not found" });
-    });
-  } catch (error) {
-    res.status(500).json({ error: "internal server error" });
-  }
-});
-
-//* Get tasks from user_id from specific Date
-controller.get("/:user_id/:date", async (req, res) => {
-  const { user_id, date } = req.params;
-  try {
-    await getTasksWithDate({
+    await getUserTasks({
       user_id,
       date,
     }).then((data) => {
       data.length
         ? res.status(200).json(data)
-        : res.status(404).json({ error: "There are no tasks on this date" });
+        : res.status(404).json({ error: "Tasks not found" });
     });
   } catch (error) {
     res.status(500).json({ error: "internal server error" });

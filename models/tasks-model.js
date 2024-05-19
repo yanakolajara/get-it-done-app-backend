@@ -1,9 +1,20 @@
 const db = require("../db/dbConfig");
 
 //* Get tasks from user_id
-const getUserTasks = async ({ user_id }) => {
+const getUserTasks = async ({ user_id, date }) => {
   try {
-    return await db.any("SELECT * FROM tasks WHERE user_id = $1", [user_id]);
+    let query;
+    let values;
+    if (date !== "null") {
+      query = "SELECT * FROM tasks WHERE user_id = $1 AND date = $2";
+      values = [user_id, date];
+      console.log("date yes:", date);
+    } else {
+      query = "SELECT * FROM tasks WHERE user_id = $1";
+      values = [user_id];
+      console.log("date no");
+    }
+    return await db.any(query, values);
   } catch (error) {
     return error.message;
   }
@@ -25,19 +36,6 @@ const getTaskOnTop = async ({ user_id }) => {
       "SELECT * FROM tasks WHERE next_task_id IS NULL AND user_id = $1",
       [user_id]
     );
-  } catch (error) {
-    return error.message;
-  }
-};
-
-//* Get tasks with user_id from specific Date
-const getTasksWithDate = async ({ user_id, date }) => {
-  try {
-    const data = await db.any(
-      "SELECT * FROM tasks WHERE user_id = $1 AND date = $2",
-      [user_id, date]
-    );
-    return data;
   } catch (error) {
     return error.message;
   }
@@ -115,7 +113,6 @@ const deleteTask = async ({ task_id }) => {
 
 module.exports = {
   getUserTasks,
-  getTasksWithDate,
   getTask,
   getTaskOnTop,
   editTask,
