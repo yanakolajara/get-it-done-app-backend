@@ -40,7 +40,7 @@ controller.post("/:user_id", async (req, res) => {
           user_id,
           data: {
             ...req.body,
-            date: req.body.date ?? getDayStr(),
+            date: req.body.date || getDayStr(),
           },
           currTopId: currTop.id,
         });
